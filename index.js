@@ -1,36 +1,21 @@
-const http = require('node:http');
-const fs = require('node:fs');
+const express = require('express');
+const app = express();
 
-async function main(){
-    const server = http.createServer((req, res) => {
-        let page='';
+app.get("/about", (req, res) => res.sendFile(__dirname + "/routes/about.html"));
+app.get("/contact-me", (req, res) => res.sendFile(__dirname + "/routes/contact-me.html"));
+app.get("/", (req, res) => res.sendFile(__dirname + "/routes/index.html"));
+app.get("*error", (req, res) => {
+    if(res.status(404)){
+        res.sendFile(__dirname + "/routes/404.html")
+    }
+});
 
-        switch(req.url){
-            case "/":
-                page="routes/index.html";
-                break;
-            case "/about":
-                page="routes/about.html";
-                break;
-            case "/contact-me":
-                page="routes/contact-me.html";
-                break;
-            default:
-                page="routes/404.html";
-                break;
-        }
-
-        fs.readFile(page, 'utf8', (err, data) => {
-            if(err){
-                console.log(err);
-                return;
-            }
-            res.writeHead(200, {'content-type': 'text/html'});
-            res.end(data);
-        })
-    });
-
-    server.listen(8000);
-}
-
-main();
+const PORT = 3000;
+app.listen(PORT, (error) => {
+  if (error) {
+    if(error == 404){
+        console.log("hi");
+    }
+    throw error;
+  }
+});
